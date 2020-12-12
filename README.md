@@ -1,5 +1,5 @@
 
-![avatar](./doc/description.png)
+![avatar](img/description.png)
 
 #environment
 ------
@@ -29,3 +29,5 @@ cd jvm -ui
 npm install
 npm run dev
 ```
+
+
