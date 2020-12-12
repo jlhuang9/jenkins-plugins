@@ -1,7 +1,8 @@
 
 ![avatar](img/description.png)
 
-#environment
+# Environment
+
 ------
 
 |       | version |
@@ -13,7 +14,8 @@
 | maven | 3.6.3   |
 
 ------
-#build
+
+# Build
 
 - jvm and plugin
 ----------------
@@ -30,4 +32,6 @@ npm install
 npm run dev
 ```
 
+see plugin documentation [here](doc/plugin.md)
+see jvm-ui documentation [here](doc/jvm-ui.md)
 
