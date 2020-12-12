@@ -1,0 +1,12 @@
+<?jelly escape-by-default='true'?>
+<j:jelly xmlns:j="jelly:core" xmlns:st="jelly:stapler" xmlns:d="jelly:define" xmlns:l="/lib/layout" xmlns:t="/lib/hudson" xmlns:f="/lib/form">
+
+  <f:section title="console output ext">
+      <f:entry title="domain" field="domain" >
+        <f:textbox default="http://localhost:8888" />
+      </f:entry>
+		<f:validateButton
+			title="checkDomain" progress="checking domain "
+			method="checkDomain" with="domain" />
+  </f:section>
+</j:jelly>
