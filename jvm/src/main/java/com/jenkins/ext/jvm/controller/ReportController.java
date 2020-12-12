@@ -25,16 +25,16 @@ public class ReportController {
 
     @GetMapping("pageQuery")
     public ResultDto<?> pageQuery(PageResult pageResult) {
-        return RestUtils.sucess(taskService.pageWorkspace(pageResult));
+        return RestUtils.ok(taskService.pageWorkspace(pageResult));
     }
 
     @GetMapping("pageTaskQuery")
     public ResultDto<?> pageTaskQuery(PageResult pageResult, TaskEntity taskEntity) {
-        return RestUtils.sucess(taskService.pageTask(pageResult, taskEntity));
+        return RestUtils.ok(taskService.pageTask(pageResult, taskEntity));
     }
 
     @GetMapping("getConsoleLog")
     public ResultDto<?> getConsole(TaskEntity taskEntity) {
-        return RestUtils.sucess(taskService.getConsole(taskEntity));
+        return RestUtils.ok(taskService.getConsole(taskEntity));
     }
 }

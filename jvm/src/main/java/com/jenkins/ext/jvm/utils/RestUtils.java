@@ -5,18 +5,18 @@ import com.jenkins.ext.jvm.entity.ResultDto;
 
 public class RestUtils {
 
-    public static final int SUCESS = 0;
+    public static final int SUCCESS = 0;
     public static final int ERROR = 1;
-    public static final String SUCESS_MSG = "sucess";
+    public static final String SUCCESS_MSG = "success";
     public static final String ERROR_MSG = "error";
 
-    public static <T> ResultDto<T> sucess() {
-        ResultDto<?> ok = sucess(true);
+    public static <T> ResultDto<T> ok() {
+        ResultDto<?> ok = ok(true);
         return (ResultDto<T>) ok;
     }
 
-    public static <T> ResultDto<T> sucess(T data) {
-        return result(SUCESS, SUCESS_MSG, data);
+    public static <T> ResultDto<T> ok(T data) {
+        return result(SUCCESS, SUCCESS_MSG, data);
     }
 
     public static <T> ResultDto<T> error(int code, String msg) {
