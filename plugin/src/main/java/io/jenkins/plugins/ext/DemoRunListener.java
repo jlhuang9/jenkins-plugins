@@ -1,21 +1,15 @@
 package io.jenkins.plugins.ext;
 
 import com.alibaba.fastjson.JSONObject;
+import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
-import hudson.FilePath;
-import hudson.Launcher;
 import hudson.console.AnnotatedLargeText;
-import hudson.model.AbstractBuild;
-import hudson.model.BuildListener;
+import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
-import hudson.tasks.BuildStepMonitor;
-import hudson.tasks.Publisher;
+import hudson.model.listeners.RunListener;
 import io.jenkins.plugins.ext.entity.TaskEntity;
 import io.jenkins.plugins.ext.util.HttpUtils;
-import jenkins.tasks.SimpleBuildStep;
-import org.kohsuke.stapler.DataBoundConstructor;
-import org.kohsuke.stapler.DataBoundSetter;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -27,12 +21,10 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * @author huangchengqian
- */
-public class DemoPublisher extends Publisher implements SimpleBuildStep {
-
-
-    private final String name;
-    private boolean useFrench;
+ * @date 2020-12-13 18:00
+ **/
+@Extension
+public class DemoRunListener extends RunListener<Run<?, ?>> {
     private static final ExecutorService threadPool;
     static {
         threadPool = Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() * 2, new ThreadFactory() {
@@ -45,29 +37,30 @@ public class DemoPublisher extends Publisher implements SimpleBuildStep {
         });
     }
 
-    @DataBoundConstructor
-    public DemoPublisher(String name) {
-        this.name = name;
-    }
+    @Override
+    public void onCompleted(Run<?, ?> build, @NonNull TaskListener listener) {
+        Result result = build.getResult();
+        if (result == null) {
+            return;
+        }
 
-    public String getName() {
-        return name;
+        String name = build.getParent().getName();
+        int number = build.getNumber();
+        long timeInMillis = build.getTimeInMillis();
+        TaskEntity taskEntity = new TaskEntity();
+        taskEntity.setName(name);
+        taskEntity.setResultName(result.toExportedObject());
+        taskEntity.setNumber(number);
+        taskEntity.setTimestamp(timeInMillis);
+        taskEntity.setType(TaskEntity.SUCESS_TYPE);
+        taskEntity.setDuration(build.getDuration());
+        pushData(taskEntity);
     }
-
-    public boolean isUseFrench() {
-        return useFrench;
-    }
-
-    @DataBoundSetter
-    public void setUseFrench(boolean useFrench) {
-        this.useFrench = useFrench;
-    }
-
 
     @Override
-    public boolean perform(AbstractBuild<?, ?> build, Launcher launcher, BuildListener listener) throws InterruptedException, IOException {
+    public void onStarted(Run<?, ?> build, TaskListener listener) {
         threadPool.execute(() -> {
-            String name = build.getProject().getName();
+            String name = build.getParent().getName();
             int number = build.getNumber();
             long timeInMillis = build.getTimeInMillis();
             TaskEntity taskEntity = new TaskEntity();
@@ -91,7 +84,6 @@ public class DemoPublisher extends Publisher implements SimpleBuildStep {
                 // TODO should sleep as in Run.writeWholeLogTo
             } while (!logText.isComplete());
         });
-        return true;
     }
 
     private void pushDataSplitLines(ByteArrayOutputStream byteArrayOutputStream, TaskEntity taskEntity, int splitLines, String charset, long pos) throws UnsupportedEncodingException {
@@ -130,24 +122,12 @@ public class DemoPublisher extends Publisher implements SimpleBuildStep {
 
     private void pushData(TaskEntity taskEntity) {
         try {
-            String domain = DESCRIPTOR.getDomain();
+            String domain = DemoGlobalConfiguration.get().getDomain();
             HttpUtils.httpPostWithJSON(domain + "/build_data", JSONObject.toJSONString(taskEntity));
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
-
-    @Override
-    public void perform(Run<?, ?> run, FilePath workspace, Launcher launcher, TaskListener listener)  {
-    }
-
-    @Override
-    public BuildStepMonitor getRequiredMonitorService() {
-        return BuildStepMonitor.BUILD;
-    }
-
-    @Extension
-    public static final DescriptorImpl DESCRIPTOR = new DescriptorImpl();
 
 
 }

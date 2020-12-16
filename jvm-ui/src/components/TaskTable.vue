@@ -47,16 +47,22 @@
     name: "TaskTable",
     data() {
       return {
+        pageIndex: 1,
+        pageSize: 10,
         tableData: [],
         total: 0
-      }
+      };
     },
     created() {
       this.query();
     },
     methods: {
       query() {
-        taskApi.pageTaskQuery({}, data => {
+        let query = {
+          pageSize: this.pageSize,
+          pageIndex: this.pageIndex
+        }
+        taskApi.pageTaskQuery(query, data => {
           this.tableData = data.rows;
           this.total = data.total;
         })
@@ -67,8 +73,15 @@
           routePath += "?name=" + row.name + "&number=" + row.number;
         }
         this.$router.push({path:routePath});
+      },
+      handleCurrentChange(pageIndex) {
+        this.pageIndex = pageIndex;
+        this.query();
+      },
+      handleSizeChange(pageSize) {
+        this.pageSize = pageSize;
+        this.query();
       }
-
     }
   }
 </script>

@@ -3,10 +3,8 @@
 
   <f:section title="Console output demo">
       <f:entry title="domain" field="domain" >
-        <f:textbox default="http://localhost:8888" />
+        <f:textbox value="${instance.domain}" />
       </f:entry>
-		<f:validateButton
-			title="checkDomain" progress="checking domain "
-			method="checkDomain" with="domain" />
+	  <f:validateButton title="checkDomain" method="checkDomain" with="domain" clazz="ignore-dirty-panel" />
   </f:section>
 </j:jelly>

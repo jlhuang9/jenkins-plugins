@@ -1,6 +1,8 @@
 package com.jenkins.ext.jvm.entity;
 
 
+import javax.validation.constraints.Max;
+import javax.validation.constraints.Min;
 import java.util.List;
 
 /**
@@ -12,6 +14,8 @@ public class PageResult<T> extends BaseEntity {
 
     private Long total;
     private List<T> rows;
+    @Max(value = 100,message = "pageSize needs to be between 10 and 100")
+    @Min(value = 10,message = "pageSize needs to be between 10 and 100")
     private Long pageSize = 10L;
     private Long pageIndex = 1L;
 

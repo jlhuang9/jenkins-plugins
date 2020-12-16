@@ -1,6 +1,9 @@
 package com.jenkins.ext.jvm.service;
 
 import com.jenkins.ext.jvm.entity.PageResult;
+import com.jenkins.ext.jvm.entity.query.QueryConsole;
+import com.jenkins.ext.jvm.entity.query.QueryTask;
+import com.jenkins.ext.jvm.entity.query.QueryTopWorksapce;
 import com.jenkins.ext.jvm.entity.TaskEntity;
 import com.jenkins.ext.jvm.entity.WorksapceEntity;
 
@@ -32,6 +35,21 @@ public interface TaskService {
      * @param taskEntity
      * @return
      */
-    List<TaskEntity> getConsole(TaskEntity taskEntity);
+    List<TaskEntity> getConsole(QueryConsole taskEntity);
+
+    /**
+     * getTasks
+     * @param queryTask
+     * @return
+     */
+    List<TaskEntity> getTasks(QueryTask queryTask);
+
+    /**
+     * getTopWorkspaces
+     * @param queryTopWorksapce query
+     * @return
+     */
+    List<WorksapceEntity> getTopWorkspaces(QueryTopWorksapce queryTopWorksapce);
+
 
 }

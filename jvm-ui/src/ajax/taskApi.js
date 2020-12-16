@@ -11,7 +11,16 @@ export default {
   pageTaskQuery(data, success){
     API.get('/report/pageTaskQuery', data, success)
   },
+
   getConsoleLog(data, success){
     API.get('/report/getConsoleLog', data, success)
-  }
+  },
+
+  getTopWorkspaces(data, success){
+    API.get('/report/getTopWorkspaces', data, success)
+  },
+
+  getTasks(data, success){
+    API.get('/report/getTasks', data, success)
+  },
 }
