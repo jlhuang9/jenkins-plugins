@@ -16,6 +16,13 @@ public class TaskEntity extends BaseEntity {
     private String log;
     private Long offset;
     private Long timestamp;
+    private Long duration;
+
+    /**
+     * jenkins result type
+     * 0-SUCCESS,1-UNSTABLE,2-FAILURE,3-NOT_BUILT,4-ABORTED
+     */
+    private String resultName;
 
     public String getName() {
         return name;
@@ -63,5 +70,21 @@ public class TaskEntity extends BaseEntity {
 
     public void setTimestamp(Long timestamp) {
         this.timestamp = timestamp;
+    }
+
+    public String getResultName() {
+        return resultName;
+    }
+
+    public void setResultName(String resultName) {
+        this.resultName = resultName;
+    }
+
+    public Long getDuration() {
+        return duration;
+    }
+
+    public void setDuration(Long duration) {
+        this.duration = duration;
     }
 }

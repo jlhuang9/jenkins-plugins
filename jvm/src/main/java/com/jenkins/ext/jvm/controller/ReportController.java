@@ -1,6 +1,8 @@
 package com.jenkins.ext.jvm.controller;
 
 import com.jenkins.ext.jvm.entity.PageResult;
+import com.jenkins.ext.jvm.entity.query.QueryTask;
+import com.jenkins.ext.jvm.entity.query.QueryTopWorksapce;
 import com.jenkins.ext.jvm.entity.ResultDto;
 import com.jenkins.ext.jvm.entity.TaskEntity;
 import com.jenkins.ext.jvm.service.TaskService;
@@ -10,6 +12,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
+import java.util.List;
 
 /**
  * @author huangchengqian
@@ -36,5 +39,15 @@ public class ReportController {
     @GetMapping("getConsoleLog")
     public ResultDto<?> getConsole(TaskEntity taskEntity) {
         return RestUtils.ok(taskService.getConsole(taskEntity));
+    }
+
+    @GetMapping("getTopWorkspaces")
+    public ResultDto<?> getTopWorkspaces(QueryTopWorksapce queryTopWorksapce) {
+        return RestUtils.ok(taskService.getTopWorkspaces(queryTopWorksapce));
+    }
+
+    @GetMapping("getTasks")
+    public ResultDto<?> getTasks(QueryTask queryTask) {
+        return RestUtils.ok(taskService.getTasks(queryTask));
     }
 }

@@ -1,6 +1,8 @@
 package com.jenkins.ext.jvm.service.impl;
 
 import com.jenkins.ext.jvm.entity.PageResult;
+import com.jenkins.ext.jvm.entity.query.QueryTask;
+import com.jenkins.ext.jvm.entity.query.QueryTopWorksapce;
 import com.jenkins.ext.jvm.entity.TaskEntity;
 import com.jenkins.ext.jvm.entity.WorksapceEntity;
 import com.jenkins.ext.jvm.service.TaskService;
@@ -14,6 +16,7 @@ import org.springframework.util.StringUtils;
 import javax.annotation.Resource;
 import java.util.List;
 import java.util.Objects;
+import java.util.regex.Pattern;
 
 /**
  * @author huangchengqian
@@ -37,10 +40,11 @@ public class TaskServiceImpl implements TaskService {
     @Override
     public PageResult<WorksapceEntity> pageWorkspace(PageResult page) {
         Long pageSize = page.getPageSize();
-        Query query = Query.query(new Criteria()).skip((page.getPageIndex() - 1) * page.getPageSize())
+        Query query = Query.query(new Criteria());
+        long count = mongoTemplate.count(query, WorksapceEntity.class);
+        query.skip((page.getPageIndex() - 1) * page.getPageSize())
                 .limit(pageSize.intValue());
         List<WorksapceEntity> worksapceEntities = mongoTemplate.find(query, WorksapceEntity.class);
-        long count = mongoTemplate.count(query, WorksapceEntity.class);
         page.setTotal(count);
         page.setRows(worksapceEntities);
         return page;
@@ -54,14 +58,17 @@ public class TaskServiceImpl implements TaskService {
         if (!StringUtils.isEmpty(taskEntity.getName())) {
             criteria.and("name").is(taskEntity.getName());
         }
-        Query query = Query.query(criteria).skip((page.getPageIndex() - 1) * pageSize)
+        Query query = Query.query(criteria);
+        long count = mongoTemplate.count(query, TaskEntity.class);
+        query.skip((page.getPageIndex() - 1) * pageSize)
                 .limit(pageSize.intValue()).with(Sort.by(Sort.Direction.DESC, "number"));
         List<TaskEntity> taskEntities = mongoTemplate.find(query, TaskEntity.class);
-        long count = mongoTemplate.count(query, TaskEntity.class);
         page.setRows(taskEntities);
         page.setTotal(count);
         return page;
     }
+
+
 
     @Override
     public List<TaskEntity> getConsole(TaskEntity taskEntity) {
@@ -76,6 +83,35 @@ public class TaskServiceImpl implements TaskService {
                 .and("type").is(TaskEntity.BUILDING_TYPE)
                 .and("offset").gt(offset);
         Query query = Query.query(criteria).limit(20).with(Sort.by(Sort.Direction.ASC, "offset"));
+        List<TaskEntity> taskEntities = mongoTemplate.find(query, TaskEntity.class);
+        return taskEntities;
+    }
+
+    @Override
+    public List<WorksapceEntity> getTopWorkspaces(QueryTopWorksapce queryTopWorksapce) {
+        String name = queryTopWorksapce.getName();
+        int size = queryTopWorksapce.getSize();
+        Query query = new Query();
+        if (!StringUtils.isEmpty(name)) {
+            Pattern pattern= Pattern.compile("^.*"+name+".*$", Pattern.CASE_INSENSITIVE);
+            query.addCriteria(Criteria.where("name").regex(pattern));
+        }
+        query.limit(size);
+        List<WorksapceEntity> worksapceEntities = mongoTemplate.find(query, WorksapceEntity.class);
+        return worksapceEntities;
+    }
+
+    @Override
+    public List<TaskEntity> getTasks(QueryTask queryTask) {
+        String name = queryTask.getName();
+        int type = queryTask.getType();
+        Query query = new Query();
+        if (!StringUtils.isEmpty(name)) {
+            Pattern pattern= Pattern.compile("^.*"+name+".*$", Pattern.CASE_INSENSITIVE);
+            query.addCriteria(Criteria.where("name").regex(pattern));
+        }
+        query.addCriteria(Criteria.where("type").is(type));
+        query.with(Sort.by("timestamp"));
         List<TaskEntity> taskEntities = mongoTemplate.find(query, TaskEntity.class);
         return taskEntities;
     }

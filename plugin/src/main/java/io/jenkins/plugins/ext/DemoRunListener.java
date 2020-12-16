@@ -4,6 +4,7 @@ import com.alibaba.fastjson.JSONObject;
 import edu.umd.cs.findbugs.annotations.NonNull;
 import hudson.Extension;
 import hudson.console.AnnotatedLargeText;
+import hudson.model.Result;
 import hudson.model.Run;
 import hudson.model.TaskListener;
 import hudson.model.listeners.RunListener;
@@ -37,8 +38,23 @@ public class DemoRunListener extends RunListener<Run<?, ?>> {
     }
 
     @Override
-    public void onCompleted(Run<?, ?> run, @NonNull TaskListener listener) {
-        System.out.println("TestRunListener onCompleted");
+    public void onCompleted(Run<?, ?> build, @NonNull TaskListener listener) {
+        Result result = build.getResult();
+        if (result == null) {
+            return;
+        }
+
+        String name = build.getParent().getName();
+        int number = build.getNumber();
+        long timeInMillis = build.getTimeInMillis();
+        TaskEntity taskEntity = new TaskEntity();
+        taskEntity.setName(name);
+        taskEntity.setResultName(result.toExportedObject());
+        taskEntity.setNumber(number);
+        taskEntity.setTimestamp(timeInMillis);
+        taskEntity.setType(TaskEntity.SUCESS_TYPE);
+        taskEntity.setDuration(build.getDuration());
+        pushData(taskEntity);
     }
 
     @Override
