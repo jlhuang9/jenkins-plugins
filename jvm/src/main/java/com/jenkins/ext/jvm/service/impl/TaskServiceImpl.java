@@ -108,8 +108,7 @@ public class TaskServiceImpl implements TaskService {
         int type = queryTask.getType();
         Query query = new Query();
         if (!StringUtils.isEmpty(name)) {
-            Pattern pattern= Pattern.compile("^.*"+name+".*$", Pattern.CASE_INSENSITIVE);
-            query.addCriteria(Criteria.where("name").regex(pattern));
+            query.addCriteria(Criteria.where("name").is(name));
         }
         query.addCriteria(Criteria.where("type").is(type));
         query.with(Sort.by("timestamp"));
