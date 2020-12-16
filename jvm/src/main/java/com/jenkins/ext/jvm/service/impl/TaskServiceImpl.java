@@ -1,10 +1,11 @@
 package com.jenkins.ext.jvm.service.impl;
 
 import com.jenkins.ext.jvm.entity.PageResult;
-import com.jenkins.ext.jvm.entity.query.QueryTask;
-import com.jenkins.ext.jvm.entity.query.QueryTopWorksapce;
 import com.jenkins.ext.jvm.entity.TaskEntity;
 import com.jenkins.ext.jvm.entity.WorksapceEntity;
+import com.jenkins.ext.jvm.entity.query.QueryConsole;
+import com.jenkins.ext.jvm.entity.query.QueryTask;
+import com.jenkins.ext.jvm.entity.query.QueryTopWorksapce;
 import com.jenkins.ext.jvm.service.TaskService;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.mongodb.core.MongoTemplate;
@@ -71,7 +72,7 @@ public class TaskServiceImpl implements TaskService {
 
 
     @Override
-    public List<TaskEntity> getConsole(TaskEntity taskEntity) {
+    public List<TaskEntity> getConsole(QueryConsole taskEntity) {
         String name = taskEntity.getName();
         Integer number = taskEntity.getNumber();
         Long offset = taskEntity.getOffset();

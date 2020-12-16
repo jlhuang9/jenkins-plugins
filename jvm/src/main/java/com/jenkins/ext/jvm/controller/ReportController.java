@@ -1,10 +1,11 @@
 package com.jenkins.ext.jvm.controller;
 
 import com.jenkins.ext.jvm.entity.PageResult;
-import com.jenkins.ext.jvm.entity.query.QueryTask;
-import com.jenkins.ext.jvm.entity.query.QueryTopWorksapce;
 import com.jenkins.ext.jvm.entity.ResultDto;
 import com.jenkins.ext.jvm.entity.TaskEntity;
+import com.jenkins.ext.jvm.entity.query.QueryConsole;
+import com.jenkins.ext.jvm.entity.query.QueryTask;
+import com.jenkins.ext.jvm.entity.query.QueryTopWorksapce;
 import com.jenkins.ext.jvm.service.TaskService;
 import com.jenkins.ext.jvm.utils.RestUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -12,7 +13,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.annotation.Resource;
-import java.util.List;
+import javax.validation.Valid;
 
 /**
  * @author huangchengqian
@@ -27,18 +28,18 @@ public class ReportController {
 
 
     @GetMapping("pageQuery")
-    public ResultDto<?> pageQuery(PageResult pageResult) {
+    public ResultDto<?> pageQuery(@Valid PageResult pageResult) {
         return RestUtils.ok(taskService.pageWorkspace(pageResult));
     }
 
     @GetMapping("pageTaskQuery")
-    public ResultDto<?> pageTaskQuery(PageResult pageResult, TaskEntity taskEntity) {
+    public ResultDto<?> pageTaskQuery(@Valid PageResult pageResult, TaskEntity taskEntity) {
         return RestUtils.ok(taskService.pageTask(pageResult, taskEntity));
     }
 
     @GetMapping("getConsoleLog")
-    public ResultDto<?> getConsole(TaskEntity taskEntity) {
-        return RestUtils.ok(taskService.getConsole(taskEntity));
+    public ResultDto<?> getConsole(@Valid QueryConsole queryConsole) {
+        return RestUtils.ok(taskService.getConsole(queryConsole));
     }
 
     @GetMapping("getTopWorkspaces")
@@ -47,7 +48,7 @@ public class ReportController {
     }
 
     @GetMapping("getTasks")
-    public ResultDto<?> getTasks(QueryTask queryTask) {
+    public ResultDto<?> getTasks(@Valid QueryTask queryTask) {
         return RestUtils.ok(taskService.getTasks(queryTask));
     }
 }

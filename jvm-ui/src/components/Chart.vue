@@ -1,14 +1,15 @@
 <template>
   <div class="hello">
-    <el-form :inline="true" :model="formInline" class="demo-form-inline">
-      <el-form-item label="name">
+    <el-form :inline="true" :rules="rules" ref="formInline" :model="formInline" class="demo-form-inline">
+      <el-form-item label="name" prop="name">
         <el-select
-          v-model="value"
+          v-model="formInline.name"
           filterable
           remote
           reserve-keyword
           placeholder="name words"
           :remote-method="remoteMethod"
+          :no-data-text="noDateString"
           :loading="loading">
           <el-option
             v-for="item in options"
@@ -18,9 +19,9 @@
           </el-option>
         </el-select>
       </el-form-item>
-      <el-form-item label="date">
+      <el-form-item label="date range" prop="dateRange">
         <el-date-picker
-          v-model="dateRange"
+          v-model="formInline.dateRange"
           type="daterange"
           align="right"
           unlink-panels
@@ -31,8 +32,7 @@
         </el-date-picker>
       </el-form-item>
       <el-form-item>
-        <el-button type="primary" @click="onSubmit">查询</el-button>
-        <el-button type="primary" @click="debug">查询</el-button>
+        <el-button type="primary" @click="onSubmit">search</el-button>
       </el-form-item>
     </el-form>
 
@@ -87,13 +87,16 @@
             }
           }]
         },
-        dateRange: null,
-        value: "",
+        rules: {
+          name: [{required: true, message: 'name is required', trigger: 'change' }],
+          dateRange: [{type: "array", required: true, message: 'date range is required', trigger: 'change'}]
+        },
         loading: false,
+        noDateString: "no data",
         options: [],
         formInline: {
-          user: '',
-          region: ''
+          dateRange: null,
+          name: ""
         },
         dataArray: [],
         taskArray: [],
@@ -157,17 +160,25 @@
         })
       },
       onSubmit() {
-        let query = {
-          type: 2,
-          name: this.value
-        };
-        this.toDateArrayRange();
-        taskApi.getTasks(query, result => {
-          if (result) {
-            this.taskArray = result;
-            this.refresh();
+        this.$refs["formInline"].validate((valid) => {
+          if (valid) {
+            let query = {
+              type: 2,
+              name: this.formInline.name
+            };
+            this.toDateArrayRange();
+            taskApi.getTasks(query, result => {
+              if (result) {
+                this.taskArray = result;
+                this.refresh();
+              }
+            });
+          } else {
+            console.log('error submit!!');
+            return false;
           }
         });
+
       },
       debug() {
         debugger;
@@ -195,6 +206,7 @@
         this.templateChat.title.text = "Build times";
         this.templateChat.xAxis[0].data = dataArray;
         this.templateChat.series[0].data = countArray;
+        this.templateChat.series[0].name = "count";
         this.templateChat.series[0].type = "line";
         this.$echarts.init(document.querySelector('#chart'));
         let myChart = this.$echarts.init(document.querySelector('#chart'));
@@ -202,6 +214,7 @@
         this.templateChat.title.text = "Build duration";
         this.templateChat.xAxis[0].data = numberArray;
         this.templateChat.series[0].data = duration;
+        this.templateChat.series[0].name = "duration(ms)";
         this.templateChat.series[0].type = "bar";
         let myChart2 = this.$echarts.init(document.querySelector('#chart2'));
         myChart2.setOption(this.templateChat);
@@ -211,8 +224,8 @@
         return date.getFullYear() + "-" + (date.getMonth() + 1) + "-" + date.getDate();
       },
       toDateArrayRange() {
-        let startTime = this.dateRange[0];
-        let endTime = this.dateRange[1];
+        let startTime = this.formInline.dateRange[0];
+        let endTime = this.formInline.dateRange[1];
         let startDate = new Date(startTime.getFullYear(), startTime.getMonth(), startTime.getDate());
         let endDate = new Date(endTime.getFullYear(), endTime.getMonth(), endTime.getDate());
         let tempDate = startDate;

@@ -2,11 +2,10 @@ package com.jenkins.ext.jvm.utils;
 
 
 import com.jenkins.ext.jvm.entity.ResultDto;
+import com.jenkins.ext.jvm.error.ResponseCode;
 
 public class RestUtils {
 
-    public static final int SUCCESS = 0;
-    public static final int ERROR = 1;
     public static final String SUCCESS_MSG = "success";
     public static final String ERROR_MSG = "error";
 
@@ -16,7 +15,7 @@ public class RestUtils {
     }
 
     public static <T> ResultDto<T> ok(T data) {
-        return result(SUCCESS, SUCCESS_MSG, data);
+        return result(ResponseCode.SUCCESS, SUCCESS_MSG, data);
     }
 
     public static <T> ResultDto<T> error(int code, String msg) {
@@ -28,7 +27,7 @@ public class RestUtils {
     }
 
     public static <T> ResultDto<T> error() {
-        return error(ERROR, ERROR_MSG);
+        return error(ResponseCode.ERROR, ERROR_MSG);
     }
 
     private static <T> ResultDto<T> result(int code, String msg, T data) {
